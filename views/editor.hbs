@@ -1,0 +1,161 @@
+<style>
+    .editorpanel {
+        float: left;
+    }
+
+    .textarea {
+        float: left;
+        font-size: large;
+        resize: none;
+        width: 500px;
+        padding-top: 7px;
+    }
+
+    .font {
+        padding: 5px;
+        background-color: orange;
+        width: 45px;
+        height: 20px;
+        margin: 10px;
+    }
+
+    .font:hover {
+        background-color: yellow;
+    }
+
+    .saveset {
+        padding: 15px;
+        padding-bottom: 27px;
+        background-color: lightblue;
+        height: 20px;
+        border-radius: 5px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        margin: 10px;
+    }
+
+    .saveset:hover {
+        background-color: blue;
+    }
+
+    .left {
+        border-bottom-left-radius: 10px;
+        border-top-left-radius: 10px;
+    }
+
+    .right {
+        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .colorpicker {
+        width: 155px;
+        margin: 0px 0px 0px 20px;
+    }
+
+    .float {
+        float: left;
+    }
+
+    .numberarea {
+        border: solid 1px black;
+    }
+
+    p {
+        line-height: 20%;
+    }
+
+    .area {
+        margin: 20px
+    }
+
+    .controlpanel {
+        border: dotted gray 5px;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 15px;
+    }
+</style>
+<div class="float controlpanel">
+    <div class="font left float" onclick='font("plus")'>+</div>
+    <div style="float:left; margin-top:15px;">FONT</div>
+    <div class="font right float" onclick='font("minus")'>-</div>
+    <div style="clear:both"></div>
+    <form action="/saveset" method="POST">
+        <input name="color" type="color" id="colorpicker" class="colorpicker" onchange="colorpicker()" ></input>
+        <br>
+        <input style="display:none;" id="fontsize" name="fontsize" > </input>
+        <button type="submit" class="saveset">Zapisz ustawienia edytora</button>
+        <hr>
+    </form>
+
+
+</div>
+
+<div class="float area">
+    <div id="numberarea" class="numberarea float">0
+    </div>
+
+    <form action="/savetext?id={{editor.name}}" method="POST">
+        <textarea style="color:{{editor.color}};font-size:{{editor.fontsize}}px;" name="area" class="textarea float" id="textarea" rows="20"
+            onkeyup='areanumbers()'>{{editor.text}}
+        </textarea>
+        <button type="submit" style="margin-left:50px;" class="saveset">Zapisz plik</button>
+
+    </form>
+    <div style="clear:both"></div>
+</div>
+
+
+<div style="clear:both"></div>
+<script>
+    let json={}
+
+    function areanumbers() {
+        let areatext = document.getElementById("textarea").value
+
+        let textarray = areatext.split("\n");
+        console.log(textarray.length)
+        document.getElementById("numberarea").innerHTML = ""
+        for (let i = 0; i < textarray.length; i++) {
+            document.getElementById("numberarea").innerHTML =
+                document.getElementById("numberarea").innerHTML + "<p>" + parseFloat(i)
+        }
+
+
+    }
+    function font(value) {
+
+        let plus
+        if (value == "plus") {
+            plus = true
+        }
+        else {
+            plus = false
+        }
+        var el = document.getElementById('textarea');
+        var style = window.getComputedStyle(el, null).getPropertyValue('font-size');
+        var fontSize = parseFloat(style);
+        el.style.fontSize = (fontSize + (plus ? +1 : -1)) + 'px';
+
+        var elf = document.getElementById('numberarea');
+        var stylef = window.getComputedStyle(el, null).getPropertyValue('font-size');
+        var fontSizef = parseFloat(stylef);
+        elf.style.fontSize = (fontSizef + (plus ? +1 : -1)) + 'px';
+        json.fontsize=elf.style.fontSize
+
+        document.getElementById("fontsize").value=json.fontsize
+    }
+    document.getElementById("colorpicker").onchange = function(){
+        console.log("color picker!!!")
+        document.getElementById("textarea").style.color=document.getElementById("colorpicker").value
+        json.color=document.getElementById("colorpicker").value
+        console.log(json)
+    
+    };
+
+
+
+    areanumbers();
+</script>

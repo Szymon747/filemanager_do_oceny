@@ -1,0 +1,137 @@
+<div class="left float">
+    <aside>
+
+        <div class="nowyplik_katalog" onclick="add('plik')"> nowy plik
+        </div>
+        <div class="nowyplik_katalog" onclick="add('katalog')"> nowy katalog
+        </div>
+        <div>
+            <a href="/delete?id=all">deleteall</a>
+        </div>
+    </aside>
+
+</div>
+<div class="main float">
+    <article>
+        <dialog id="dialog" style="display:none" open>
+            <p id="dialogtext"></p>
+            <form method="get" action="/name" id="form">
+                <input type="text" name="name" id="dialoginput" onchange="check()">
+                <button id="schowany" style="display:none">Utwórz</button>
+            </form>
+        </dialog>
+
+
+
+
+
+        {{#each t}}
+        <div class="tile">
+
+            <img src="gfx/{{this.picture}}.png" alt="zly link do obrazka" width="50" height="50">
+            <span class="tile_name">{{this.name}}</span><br><br><br>
+            <a class="intile" href="/info?id={{this.name}}">info</a>
+            <a class="intile" href="">download</a>
+            <a class="intile" href="/delete?id={{this.name}}">delete</a>
+            <a class="intile" href="/podglad?id={{this.name}}">podgląd</a>
+
+        </div>
+        {{/each}}
+        <div class="clear"></div>
+    </article>
+</div>
+<script>
+    document.getElementById("dialog").style.display = "none";
+
+
+
+    document.getElementById("form").onkeypress = function (e) {                 //ze staca ze enter nie dzialal
+        var key = e.charCode || e.keyCode || 0;
+        if (key == 13) {
+            alert("No Enter!");
+            e.preventDefault();
+            document.getElementById("schowany").style.display = "none"
+
+        }
+    }
+
+
+
+    var rodzaj;
+    function check() {
+        let nazwa = document.getElementById("dialoginput").value
+        console.log(nazwa.length)
+        if (nazwa.length > 0) {
+            console.log("git")
+            if (rodzaj == "katalog") {
+                if (nazwa.indexOf(".") >= 0) {
+                    confirm("katalog nie może mieć w nazwie kropki")
+                }
+                else {
+                    document.getElementById("schowany").style.display = ""
+                }
+            }
+            else {
+                let ilosc = 0
+                for (let i = 0; i < nazwa.length; i++) {
+                    if (nazwa.charAt(i) == ".") {
+                        ilosc++
+                    }
+                }
+                if (ilosc > 1) {
+                    confirm("nazwa pliku ma za duzo kropek")
+                }
+                else {
+                    if (ilosc < 1) {
+                        confirm("nazwa pliku nie ma rozszerzenia")
+
+                    }
+                    else {
+                        let extensions = ["txt", "js", "html", "css", "png", "jpeq"]
+                        let extension = nazwa.slice(nazwa.indexOf(".") + 1, nazwa.length)
+                        let ok = false
+                        for (let i = 0; i < extensions.length; i++) {
+                            if (extensions[i] == extension) {
+                                ok = true
+                            }
+                        }
+                        if (ok == true) {
+                            document.getElementById("schowany").style.display = ""
+
+                        }
+                        else {
+                            confirm('możesz wybrać tylko te rozszerzenia:"txt","js","html","css","png","jpeq"')
+                        }
+
+
+
+                        console.log(extension)
+                    }
+
+                }
+                console.log(ilosc)
+
+            }
+        }
+    }
+
+    function add(what) {
+        rodzaj = what
+        console.log("seleceted " + what)
+        document.getElementById("dialog").style.display = ""
+        document.getElementById("dialogtext").innerHTML = "Podaj nazwę " + what
+        document.getElementById("form").setAttribute("action", "create" + what)
+        helper = what
+
+        if (document.getElementById("dialogtext").value.length < 0) {
+            if (what == "directory") {
+
+            }
+        }
+        else {
+            confirm("Proszę wpisać nazwę.")
+        }
+
+        let result = req.query.name.slice(req.query.name.indexOf(".") + 1, req.query.name.length);
+    }
+</script>
